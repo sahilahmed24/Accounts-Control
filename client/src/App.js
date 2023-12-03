@@ -34,7 +34,9 @@ const App = () => {
   };
 
   const handleSelectAllOnPage = () => {
-    const allIdsOnPage = filteredUsers.map((user) => user.id);
+    const allIdsOnPage = filteredUsers
+      .slice((currentPage - 1) * usersPerPage, currentPage * usersPerPage)
+      .map((user) => user.id);
     setSelectedRows((prevSelectedRows) =>
       prevSelectedRows.length === allIdsOnPage.length ? [] : allIdsOnPage
     );
