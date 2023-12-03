@@ -6,6 +6,8 @@ const API_ENDPOINT =
 
 const App = () => {
   const [users, setUsers] = useState([]);
+  const [editingRowId, setEditingRowId] = useState(null);
+  const [editedRowData, setEditedRowData] = useState({});
   const [filteredUsers, setFilteredUsers] = useState([]);
   const [selectedRows, setSelectedRows] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
@@ -17,6 +19,7 @@ const App = () => {
     fetch(API_ENDPOINT)
       .then((response) => response.json())
       .then((data) => {
+        console.log("API Data:", data);
         setUsers(data);
         setFilteredUsers(data);
       })
@@ -68,15 +71,44 @@ const App = () => {
     setSelectedRows([]);
   };
 
+  const handleEditRow = (id) => {
+    setEditingRowId(id);
+    setEditedRowData({});
+  };
+
+  const handleEditInputChange = (key, value) => {
+    setEditedRowData((prevData) => ({ ...prevData, [key]: value }));
+  };
+
+  const handleSaveEdit = (id) => {
+    // Update the data in memory
+    const updatedUsers = users.map((user) =>
+      user.id === id ? { ...user, ...editedRowData } : user
+    );
+
+    setUsers(updatedUsers);
+
+    // Stop editing mode
+    setEditingRowId(null);
+    setEditedRowData({});
+  };
+
+  const handleDeleteRow = (id) => {
+    // Delete the row in memory
+    const updatedUsers = users.filter((user) => user.id !== id);
+    setUsers(updatedUsers);
+    setFilteredUsers(updatedUsers);
+    setSelectedRows(selectedRows.filter((rowId) => rowId !== id));
+  };
+
   const renderTable = () => {
+    if (!users || users.length === 0) {
+      return <div>No data available</div>;
+    }
+
     const indexOfLastUser = currentPage * usersPerPage;
     const indexOfFirstUser = indexOfLastUser - usersPerPage;
     const currentUsers = filteredUsers.slice(indexOfFirstUser, indexOfLastUser);
-
-    // Check if there are no users to display
-    if (currentUsers.length === 0) {
-      return <p className="no-users-message">No users found.</p>;
-    }
 
     return (
       <table className="table">
@@ -94,15 +126,48 @@ const App = () => {
               key={user.id}
               className={selectedRows.includes(user.id) ? "selected" : ""}
             >
-              {Object.values(user).map((value, index) => (
-                <td key={index}>{value}</td>
+              {Object.entries(user).map(([key, value]) => (
+                <td key={key}>
+                  {editingRowId === user.id ? (
+                    <input
+                      type="text"
+                      value={editedRowData[key] || value}
+                      onChange={(e) =>
+                        handleEditInputChange(key, e.target.value)
+                      }
+                    />
+                  ) : (
+                    value
+                  )}
+                </td>
               ))}
               <td>
+                {editingRowId === user.id ? (
+                  <button
+                    className="action-button"
+                    onClick={() => handleSaveEdit(user.id)}
+                  >
+                    Save
+                  </button>
+                ) : (
+                  <button
+                    className="action-button"
+                    onClick={() => handleEditRow(user.id)}
+                  >
+                    Edit
+                  </button>
+                )}
                 <button
                   className="action-button"
                   onClick={() => handleSelectRow(user.id)}
                 >
                   {selectedRows.includes(user.id) ? "Deselect" : "Select"}
+                </button>
+                <button
+                  className="action-button"
+                  onClick={() => handleDeleteRow(user.id)}
+                >
+                  Delete
                 </button>
               </td>
             </tr>
