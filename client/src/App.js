@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import "./App.css";
 import Table from "./components/Table";
 import Pagination from "./components/Pagination";
+import { FaTrash, FaEdit } from "react-icons/fa";
 
 const API_ENDPOINT =
   "https://geektrust.s3-ap-southeast-1.amazonaws.com/adminui-problem/members.json";
@@ -33,8 +34,11 @@ const App = () => {
 
   useEffect(() => {
     // Update displayedUsers whenever users or filteredUsers change
-    setDisplayedUsers(filteredUsers.length > 0 ? filteredUsers : users);
-  }, [users, filteredUsers]);
+    const filteredData = filteredUsers.length > 0 ? filteredUsers : users;
+    const startIndex = (currentPage - 1) * usersPerPage;
+    const endIndex = startIndex + usersPerPage;
+    setDisplayedUsers(filteredData.slice(startIndex, endIndex));
+  }, [users, filteredUsers, currentPage, usersPerPage]);
 
   const handleKeyPress = (e) => {
     if (e.key === "Enter") {
@@ -98,8 +102,11 @@ const App = () => {
       user.id === id ? { ...user, ...editedRowData } : user
     );
 
+    console.log("Updated Users:", updatedUsers);
+
     setUsers(updatedUsers);
     setDisplayedUsers(updatedUsers);
+    setFilteredUsers(updatedUsers);
 
     // Stop editing mode
     setEditingRowId(null);
@@ -115,7 +122,7 @@ const App = () => {
   };
 
   const renderTable = () => {
-    if (!users || users.length === 0) {
+    if (!filteredUsers || filteredUsers.length === 0) {
       return <div>No data available</div>;
     }
 
@@ -148,9 +155,10 @@ const App = () => {
                   onChange={() => handleSelectRow(user.id)}
                 />
               </td>
+
+              {/* Use the updated editedRowData object to access updated values */}
               {Object.entries(user).map(([key, value]) => (
                 <td key={key}>
-                  {console.log("Rendering - key:", key, "value:", value)}
                   {editingRowId === user.id ? (
                     <input
                       type="text"
@@ -169,6 +177,7 @@ const App = () => {
                 </td>
               ))}
 
+              {/* Action buttons */}
               <td>
                 {editingRowId === user.id ? (
                   <button
