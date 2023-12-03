@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from "react";
 import "./App.css";
+import Table from "./components/Table";
+import Pagination from "./components/Pagination";
 
 const API_ENDPOINT =
   "https://geektrust.s3-ap-southeast-1.amazonaws.com/adminui-problem/members.json";
@@ -15,6 +17,7 @@ const App = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const usersPerPage = 10;
   const [displayedUsers, setDisplayedUsers] = useState([]);
+  const pageNumbers = [];
 
   useEffect(() => {
     // Fetch data from the API
@@ -258,6 +261,7 @@ const App = () => {
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
           onKeyDown={handleKeyPress}
+          className="search-field"
         />
         <button className="search-button" onClick={() => handleSearch()}>
           Search
@@ -273,6 +277,27 @@ const App = () => {
           </button>
         )}
       </div>
+      {/* <Table
+        users={displayedUsers}
+        selectedRows={selectedRows}
+        editingRowId={editingRowId}
+        editedRowData={editedRowData}
+        currentPage={currentPage}
+        usersPerPage={usersPerPage}
+        filteredUsers={filteredUsers}
+        handleSaveEdit={handleSaveEdit}
+        handleEditRow={handleEditRow}
+        handleSelectRow={handleSelectRow}
+        handleDeleteRow={handleDeleteRow}
+        handleEditInputChange={handleEditInputChange}
+      />
+      <Pagination
+        pageNumbers={pageNumbers}
+        currentPage={currentPage}
+        handlePageChange={handlePageChange}
+        filteredUsers={filteredUsers}
+        usersPerPage={usersPerPage}
+      /> */}
       {renderTable()}
       {renderPagination()}
     </div>

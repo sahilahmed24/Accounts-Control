@@ -9,7 +9,7 @@ body {
 }
 
 .app {
-  width: 100%;
+  width: 90vw;
   background-color: #fff;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
   padding: 20px;
@@ -27,6 +27,7 @@ body {
   padding: 8px;
   border: 1px solid #ccc;
   border-radius: 4px;
+  width: 50%;
 }
 
 .search-bar button {
