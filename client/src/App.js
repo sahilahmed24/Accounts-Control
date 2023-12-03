@@ -127,6 +127,7 @@ const App = () => {
       <table className="table">
         <thead>
           <tr>
+            <th>Select</th>
             {Object.keys(currentUsers[0]).map((key) => (
               <th key={key}>{key}</th>
             ))}
@@ -139,6 +140,14 @@ const App = () => {
               key={user.id}
               className={selectedRows.includes(user.id) ? "selected" : ""}
             >
+              {/* Checkbox for row selection */}
+              <td>
+                <input
+                  type="checkbox"
+                  checked={selectedRows.includes(user.id)}
+                  onChange={() => handleSelectRow(user.id)}
+                />
+              </td>
               {Object.entries(user).map(([key, value]) => (
                 <td key={key}>
                   {console.log("Rendering - key:", key, "value:", value)}
