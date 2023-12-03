@@ -33,6 +33,13 @@ const App = () => {
     setCurrentPage(1);
   };
 
+  const handleSelectAllOnPage = () => {
+    const allIdsOnPage = filteredUsers.map((user) => user.id);
+    setSelectedRows((prevSelectedRows) =>
+      prevSelectedRows.length === allIdsOnPage.length ? [] : allIdsOnPage
+    );
+  };
+
   const handlePageChange = (page) => setCurrentPage(page);
 
   const handleSelectRow = (id) => {
@@ -145,6 +152,17 @@ const App = () => {
   return (
     <div className="app">
       <div className="search-bar">
+        <label>
+          <input
+            type="checkbox"
+            checked={
+              selectedRows.length === filteredUsers.length &&
+              filteredUsers.length > 0
+            }
+            onChange={handleSelectAllOnPage}
+          />
+          Select All
+        </label>
         <input
           type="text"
           placeholder="Search"
@@ -155,9 +173,7 @@ const App = () => {
           Search
         </button>
       </div>
-      {renderTable()}
-      {renderPagination()}
-      <div className="delete-selected">
+      <div className="delete-bar">
         {selectedRows.length > 0 && (
           <button
             className="delete-button"
@@ -167,6 +183,8 @@ const App = () => {
           </button>
         )}
       </div>
+      {renderTable()}
+      {renderPagination()}
     </div>
   );
 };
