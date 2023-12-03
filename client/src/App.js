@@ -5,14 +5,16 @@ const API_ENDPOINT =
   "https://geektrust.s3-ap-southeast-1.amazonaws.com/adminui-problem/members.json";
 
 const App = () => {
-  const [users, setUsers] = useState([]);
   const [editingRowId, setEditingRowId] = useState(null);
   const [editedRowData, setEditedRowData] = useState({});
+  const [users, setUsers] = useState([]);
+
   const [filteredUsers, setFilteredUsers] = useState([]);
   const [selectedRows, setSelectedRows] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const usersPerPage = 10;
+  const [displayedUsers, setDisplayedUsers] = useState([]);
 
   useEffect(() => {
     // Fetch data from the API
@@ -25,6 +27,11 @@ const App = () => {
       })
       .catch((error) => console.error("Error fetching data:", error));
   }, []);
+
+  useEffect(() => {
+    // Update displayedUsers whenever users or filteredUsers change
+    setDisplayedUsers(filteredUsers.length > 0 ? filteredUsers : users);
+  }, [users, filteredUsers]);
 
   const handleKeyPress = (e) => {
     if (e.key === "Enter") {
@@ -39,6 +46,7 @@ const App = () => {
       )
     );
     setFilteredUsers(filtered);
+    setDisplayedUsers(filtered);
     setCurrentPage(1);
   };
 
@@ -77,6 +85,7 @@ const App = () => {
   };
 
   const handleEditInputChange = (key, value) => {
+    console.log("Editing - key:", key, "value:", value);
     setEditedRowData((prevData) => ({ ...prevData, [key]: value }));
   };
 
@@ -87,6 +96,7 @@ const App = () => {
     );
 
     setUsers(updatedUsers);
+    setDisplayedUsers(updatedUsers);
 
     // Stop editing mode
     setEditingRowId(null);
@@ -128,10 +138,15 @@ const App = () => {
             >
               {Object.entries(user).map(([key, value]) => (
                 <td key={key}>
+                  {console.log("Rendering - key:", key, "value:", value)}
                   {editingRowId === user.id ? (
                     <input
                       type="text"
-                      value={editedRowData[key] || value}
+                      value={
+                        editedRowData[key] !== undefined
+                          ? editedRowData[key]
+                          : value
+                      }
                       onChange={(e) =>
                         handleEditInputChange(key, e.target.value)
                       }
@@ -141,6 +156,7 @@ const App = () => {
                   )}
                 </td>
               ))}
+
               <td>
                 {editingRowId === user.id ? (
                   <button
