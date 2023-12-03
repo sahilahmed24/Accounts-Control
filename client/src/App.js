@@ -23,6 +23,12 @@ const App = () => {
       .catch((error) => console.error("Error fetching data:", error));
   }, []);
 
+  const handleKeyPress = (e) => {
+    if (e.key === "Enter") {
+      handleSearch();
+    }
+  };
+
   const handleSearch = () => {
     const filtered = users.filter((user) =>
       Object.values(user).some((value) =>
@@ -170,6 +176,7 @@ const App = () => {
           placeholder="Search"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
+          onKeyDown={handleKeyPress}
         />
         <button className="search-button" onClick={() => handleSearch()}>
           Search
